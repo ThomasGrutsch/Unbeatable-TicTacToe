@@ -17,6 +17,8 @@ void humanTurn(char values[]);
 void robotTurn(char values[]);
 /* This happens when the first turn happens for the robot */
 void turn0(char values[]);
+/* A special case can arrize on turn 1 - we check for it with this method*/
+int turn1(char values[]);
 /*This method checks if a winner is there, or a tie. 0 - nothing 1 - winner 2 - tie*/
 int winner(char values[]);
 /* Helps winner by actually finding if there is a winner */
@@ -32,7 +34,7 @@ int main()
 		values[i] = ' ';
 	}
 
-	printf("Welcome to tictactoe! Player has X, while the computer has 0. \n");
+	printf("Welcome to tictactoe! Player has X, while the computer has O. \n");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n \n");
 
 	while (true == 1) {
@@ -64,19 +66,17 @@ int main()
 			} //the game never ends on a tie on the computers turn so we don't check it. 
 		}
 
-
-		//this well get deleted after testing and that jazz. 
-		printBoard(values);
-
-		
 		turn++;
 		
 		//To print an integer 
 		//printf("%d \n", turn);
 
-		//this will also be deleted after testing and that jazz. 
-		break;
+		 
 	}
+
+	printf("\n\n");
+	printf("Thank you for playing!");
+	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 
 
 	return 0;
@@ -125,15 +125,116 @@ void robotTurn(char values[]) {
 
 	if (turn == 0) {
 		turn0(values);
+		break;
 	}
 
-	//now we check if the human has a winning turn
-	
+	//On turn 1 there is one strat that can beat the algo if the board has a config of
+	// | |X   if the robot does not play either to 0 or 1, it loses.
+	//X|O|	  This can happen on turn 1. 
+	// | |
+	if (turn == 1) {
+		if (turn1(values) == 1)
+			break;
+	}
+
+	//we now check if the robot can win
 
 
 
 
 }
+/* 0 - nothing was played (special case never reached) 1 - case reached and a play made.*/
+int turn1(char values[]) {
+	int num = rand() % 2;
+	//first check if X has a corner spot
+	if (values[0] == 'X') { //then check the to other cases
+		if (values[5] == 'X') {
+			if (num == 0) {
+				values[1] == 'O';
+				return 1;
+			} else {
+				values[2] == 'O';
+				return 1;
+			}
+		}
+		if (values[7] == 'X') {
+			if (num == 0) {
+				values[3] == 'O';
+				return 1;
+			} else {
+				values[6] == 'O';
+				return 1;
+			}
+		}
+	}
+
+	if (values[2] == 'X') { //then check the to other cases
+		if (values[3] == 'X') {
+			if (num == 0) {
+				values[0] == 'O';
+				return 1;
+			} else {
+				values[1] == 'O';
+				return 1;
+			}
+		}
+		if (values[7] == 'X') {
+			if (num == 0) {
+				values[5] == 'O';
+				return 1;
+			} else {
+				values[8] == 'O';
+				return 1;
+			}
+		}
+	}
+
+	if (values[6] == 'X') { //then check the to other cases
+		if (values[1] == 'X') {
+			if (num == 0) {
+				values[0] == 'O';
+				return 1;
+			} else {
+				values[3] == 'O';
+				return 1;
+			}
+		}
+		if (values[5] == 'X') {
+			if (num == 0) {
+				values[7] == 'O';
+				return 1;
+			} else {
+				values[8] == 'O';
+				return 1;
+			}
+		}
+	}
+
+	if (values[8] == 'X') { //then check the to other cases
+		if (values[1] == 'X') {
+			if (num == 0) {
+				values[2] == 'O';
+				return 1;
+			} else {
+				values[5] == 'O';
+				return 1;
+			}
+		}
+		if (values[3] == 'X') {
+			if (num == 0) {
+				values[6] == 'O';
+				return 1;
+			} else {
+				values[7] == 'O';
+				return 1;
+			}
+		}
+	}
+
+
+	return 0;
+}
+
 /* We will try and get the O in the middle, if not we go for one of the corners */
 void turn0(char values[]) {
 	int num;
