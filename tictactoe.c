@@ -81,8 +81,7 @@ int main()
 	}
 
 	printBoard(values);
-
-	printf("\n\n");
+	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 	printf("Thank you for playing!");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 
