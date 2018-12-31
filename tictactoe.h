@@ -1,135 +1,22 @@
+/*This .h file is used to linking things in C. It is good practice to use .h files, NOT .c */
 #include <stdio.h>
 #include <stdlib.h> //for rand
-#include<time.h> //for rand
-/* There aren't boolean values so have to use this */
-#define true 1 
-#define false 0
-#define MAX  3 //the maximun number of things read for the human turn 
-#define MAP 9 //the number for the size of the array(values)
+#include<time.h>
 
-int turn = 0; // gives the amount of turns that happened. 
- 
-/* One must declare a function before using it in C 
-This function prints the board */
-void printBoard(char values[]);
-/*This allows the player to choose a spot*/
-void humanTurn(char values[]);
-/* This will start the algo for the robot to make a turn. */
-void robotTurn(char values[]);
+#define MAP 9
+
+int turn = 0;
+
+void robotTurn(char values[], int turn);
 /* This happens when the first turn happens for the robot */
 void turn0(char values[]);
 /* A special case can arrize on turn 1 - we check for it with this method*/
 int turn1(char values[]);
-/*This method checks if a winner is there, or a tie. 0 - nothing 1 - winner 2 - tie*/
-int winner(char values[]);
-/* Helps winner by actually finding if there is a winner */
-int winnerHelper(char values[]);
 /* checks if the human or robot can win*/
 int winChecker(char values[], int index, char player1, char player2);
 
-int main()
-{
-	char values[MAP];
-	srand(time(0)); //rand will return the same set of random numbers. srand(time(0)) solves this. Should only be called once.
-
-
-	for (int i = 0; i < MAP; i++) {
-		values[i] = ' ';
-	}
-
-	printf("Welcome to tictactoe! Player has X, while the computer has O. \n");
-	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
-
-	while (true == 1) {
-		int hwinner = -1;
-		int rwinner = -1;
-
-		printBoard(values);
-
-		humanTurn(values);
-		
-		hwinner = winner(values);
-		if (hwinner == 1) {
-			printf("*********************************************************\n");
-			printf("You shouldn't have been able to do that! (Win that is!)\n");
-			printf("*********************************************************\n");
-			break;
-		} else if (hwinner == 2) {
-			printf("*********************************************************\n");
-			printf("Tie! Time to get a better strat.\n");
-			printf("*********************************************************\n");
-			break;
-		}
-				
-
-		//robot turn
-		robotTurn(values);
-		
-		rwinner = winner(values);
-		if (rwinner == 1) {
-			printf("*********************************************************\n");
-			printf("Computer won! Are you even trying?\n");
-			printf("*********************************************************\n");
-			break;
-		} //the game never ends on a tie on the computers turn so we don't check it. 
-		
-		turn++;
-		//To print an integer 
-		//printf("%d \n", turn);
-
-		 
-	}
-
-	printBoard(values);
-
-	printf("\n\n");
-	printf("Thank you for playing!");
-	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
-
-
-	return 0;
-}
-
-void printBoard(char values[]) {
-
-	printf("%c|%c|%c\n", values[0], values[1], values[2]);
-	printf("------\n");
-	printf("%c|%c|%c\n", values[3], values[4], values[5]);
-	printf("------\n");
-	printf("%c|%c|%c\n", values[6], values[7], values[8]);
-
-}
-
-void humanTurn(char values[]) {
-	char spot[MAX];
-	for (int i = 0; i < MAX; i++)
-		spot[i] = ' ';
-	printf("Choose a location(1-9)(Only the first character is read): ");
-	while (true == 1) {
-		fgets(spot, MAX, stdin);
-		//ASCII - number 1 starts at 49
-		if (spot[0] == 49 || spot[0] == 50 ||
-			spot[0] == 51 || spot[0] == 52 ||
-			spot[0] == 53 || spot[0] == 54 ||
-			spot[0] == 55 || spot[0] == 56 ||
-			spot[0] == 57) {
-			
-			if (values[spot[0] - 49] == ' ') {
-				break;
-			} 
-
-		}
-
-		printf("1st char was not an integer, try again: ");
-
-	}
-
-	values[spot[0] - 49] = 'X';
-
-
-}
-
-void robotTurn(char values[]) {
+/*This one has an extra parameter for turn*/
+void robotTurn(char values[], int turn) {
 
 	if (turn == 0) {
 		turn0(values);
@@ -172,6 +59,7 @@ void robotTurn(char values[]) {
 	}	
 
 }
+
 /*checks if either human or robot can win ret - 0 if no 1 - if yes and plays */
 int winChecker(char values[], int index, char player1, char player2) {
 	//checking the horizontal lines
@@ -399,90 +287,3 @@ void turn0(char values[]) {
 
 	
 }
-
-/*0 - nothing 1 - winner 2 - tie */
-int winner(char values[]) {
-	//first check if there is a tie. 
-	int tie = true;
-	for (int i = 0; i < MAP; i++) {
-		if (values[i] == ' ') {
-			tie = false;
-			break;
-		}
-	}
-
-	if (tie == 1) {
-		if (winnerHelper(values) == 1)
-			return 1;
-		else 
-			return 2;
-	}
-
-	return winnerHelper(values);
-
-}
-
-/* Finds if there is a winner 0 - nothing 1 - winner
-We are just gong to brute force it for now. */
-int winnerHelper(char values[]) {
-
-	//checking if there is a winner
-	char cPos = values[0];
-	if (cPos != ' ') {
-		//checking the 0 vertical
-		if (values[3] == cPos && values[6] == cPos) {
-			return 1;
-		}
-
-		if (values[1] == cPos && values[2] == cPos) {
-			return 1;
-		}
-
-		if (values[4] == cPos && values[8] == cPos) {
-			return 1;
-		}
-
-	}
-	//vertical 1
-	cPos = values[1];
-	if (cPos != ' ') {
-		if (values[4] == cPos && values[7] == cPos) {
-			return 1;
-		}
-	}
-
-	//vertical and diagonal of 2
-	cPos = values[2];
-	if (cPos != ' ') {
-		if (values[5] == cPos && values[8] == cPos) {
-			return 1;
-		}
-		if (values[4] == cPos && values[6] == cPos) {
-			return 1;
-		}
-	}
-
-	cPos = values[3];
-	if (cPos != ' ') {
-		if (values[4] == cPos && values[5] == cPos) {
-			return 1;
-		}
-	}
-
-	cPos = values[6];
-	if (cPos != ' ') {
-		if (values[7] == cPos && values[8] == cPos) {
-			return 1;
-		}
-	}
-	//no winner return 0
-	return 0;
-
-}
-
-
-
-
-
-
-
