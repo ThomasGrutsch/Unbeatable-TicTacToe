@@ -82,7 +82,7 @@ int main()
 
 	printBoard(values);
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
-	printf("Thank you for playing!");
+	printf("Thank you for playing!\n");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 
 
