@@ -3,7 +3,8 @@
 /*This tests a bug where the game does not play for the win given a specific set up*/
 int test1();
 
-/*Currently I do not think this is the best way to setup test files, but this is what we figured out through little research*/
+/*Currently I do not think this is the best way to setup test files (as in 
+with using tictactoe.h and what else.) , but this is what we figured out through little research*/
 
 
 
@@ -20,6 +21,8 @@ int main() {
 	} else {
 		passes++;
 	}
+
+
 
 
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -54,5 +57,7 @@ int test1() {
 		printf("Test 1 Actual: %c. Expected: O \n", values[6]);
 		return 0;
 	}
+
+	/*Bug solved: in winChecker the final loop (the top right to bottom left diagonal) had its start at 0 instead of 2*/
 
 }

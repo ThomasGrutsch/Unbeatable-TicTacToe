@@ -120,7 +120,7 @@ void humanTurn(char values[]) {
 
 		}
 
-		printf("1st char was not an integer, try again: ");
+		printf("Invalid entry, try again: ");
 
 	}
 
