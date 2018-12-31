@@ -23,6 +23,8 @@ int turn1(char values[]);
 int winner(char values[]);
 /* Helps winner by actually finding if there is a winner */
 int winnerHelper(char values[]);
+/* checks if the human or robot can win*/
+int winChecker(char values[], int index, char player1, char player2);
 
 int main()
 {
@@ -35,7 +37,7 @@ int main()
 	}
 
 	printf("Welcome to tictactoe! Player has X, while the computer has O. \n");
-	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n \n");
+	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n");
 
 	while (true == 1) {
 		int hwinner = -1;
@@ -44,35 +46,40 @@ int main()
 		printBoard(values);
 
 		humanTurn(values);
-		if (turn > 2){
-			hwinner = winner(values);
-			if (hwinner == 1) {
-				printf("You shouldn't have been able to do that! (Win that is!)\n");
-				break;
-			} else if (hwinner == 2) {
-				printf("Tie! Time to get a better strat.\n");
-				break;
-			}
-		}		
-
-		//robot turn, robot does not go on the 5th iteration
-		if (turn < 5)
-			robotTurn(values);
-		if (turn > 2){
-			rwinner = winner(values);
-			if (rwinner == 1) {
-				printf("Computer won! Are you even trying?\n");
-				break;
-			} //the game never ends on a tie on the computers turn so we don't check it. 
-		}
-
-		turn++;
 		
+		hwinner = winner(values);
+		if (hwinner == 1) {
+			printf("*********************************************************\n");
+			printf("You shouldn't have been able to do that! (Win that is!)\n");
+			printf("*********************************************************\n");
+			break;
+		} else if (hwinner == 2) {
+			printf("*********************************************************\n");
+			printf("Tie! Time to get a better strat.\n");
+			printf("*********************************************************\n");
+			break;
+		}
+				
+
+		//robot turn
+		robotTurn(values);
+		
+		rwinner = winner(values);
+		if (rwinner == 1) {
+			printf("*********************************************************\n");
+			printf("Computer won! Are you even trying?\n");
+			printf("*********************************************************\n");
+			break;
+		} //the game never ends on a tie on the computers turn so we don't check it. 
+		
+		turn++;
 		//To print an integer 
 		//printf("%d \n", turn);
 
 		 
 	}
+
+	printBoard(values);
 
 	printf("\n\n");
 	printf("Thank you for playing!");
@@ -125,7 +132,7 @@ void robotTurn(char values[]) {
 
 	if (turn == 0) {
 		turn0(values);
-		break;
+		return;
 	}
 
 	//On turn 1 there is one strat that can beat the algo if the board has a config of
@@ -134,15 +141,146 @@ void robotTurn(char values[]) {
 	// | |
 	if (turn == 1) {
 		if (turn1(values) == 1)
-			break;
+			return;
 	}
 
 	//we now check if the robot can win
+	for (int i = 0; i < sizeof values; i++) {
+		if (values[i] == 'O') {
+			if (winChecker(values, i, 'O', 'X') == 1) {
+				return;
+			}
+		}
+	}
 
+	//check if human can win. 
+	for (int i = 0; i < sizeof values; i++) {
+		if (values[i] == 'X') {
+			if (winChecker(values, i, 'X', 'O') == 1) {
+				return;
+			}
+		}
+	}
 
-
+	//if we can not find any moves that meet these criteria, play random for now. 
+	for (int i = 0; i < sizeof values; i++) {
+		if (values[i] == ' ') {
+			values[i] = 'O';
+			break;
+		}
+	}	
 
 }
+/*checks if either human or robot can win ret - 0 if no 1 - if yes and plays */
+int winChecker(char values[], int index, char player1, char player2) {
+	//checking the horizontal lines
+	for (int i = 0; i <= 6; i += 3) {
+		int pos = 0; //finds the open spot
+		int count = 0;
+		if (values[i] == player1)
+			count++;
+		else if (values[i] == player2)
+			continue;
+		else 
+			pos = i;
+
+		if (values[i + 1] == player1)
+			count++;
+		else if (values[i + 1] == player2)
+			continue;
+		else 
+			pos = i + 1;
+
+		if (values[i + 2] == player1)
+			count++;
+		else if (values[i + 2] == player2)
+			continue;
+		else 
+			pos = i + 2;
+
+		if (count == 2) {
+			values[pos] = 'O';
+			return 1;
+		}
+
+	}
+
+	//checking the vertical lines
+	for (int i = 0; i <= 2; i++) {
+		int pos = 0; //finds the open spot
+		int count = 0;
+		if (values[i] == player1)
+			count++;
+		else if (values[i] == player2)
+			continue;
+		else 
+			pos = i;
+
+		if (values[i + 3] == player1)
+			count++;
+		else if (values[i + 3] == player2)
+			continue;
+		else 
+			pos = i + 3;
+
+		if (values[i + 6] == player1)
+			count++;
+		else if (values[i + 6] == player2)
+			continue;
+		else 
+			pos = i + 6;
+
+		if (count == 2) {
+			values[pos] = 'O';
+			return 1;
+		}
+
+	}
+
+	int pos = 0;
+	int count = 0;
+	//checking the diagonal lines
+	for (int i = 0; i <= 8; i += 4) {
+		if (values[i] == player1)
+			count++;
+		else if (values[i] == player2) {
+			count -= 50;
+			break;
+		} else {
+			pos = i;
+		}
+	}
+
+	if (count == 2) {
+		values[pos] = 'O';
+		return 1;
+	}
+
+	//reset variables
+	pos = 0;
+	count = 0;
+
+	for (int i = 0; i <= 6; i += 2) {
+		if (values[i] == player1)
+			count++;
+		else if (values[i] == player2) {
+			count -= 50;
+			break;
+		} else {
+			pos = i;
+		}
+	}
+
+	if (count == 2) {
+		values[pos] = 'O';
+		return 1;
+	}
+	
+
+	return 0;
+}
+
+
 /* 0 - nothing was played (special case never reached) 1 - case reached and a play made.*/
 int turn1(char values[]) {
 	int num = rand() % 2;
@@ -150,19 +288,19 @@ int turn1(char values[]) {
 	if (values[0] == 'X') { //then check the to other cases
 		if (values[5] == 'X') {
 			if (num == 0) {
-				values[1] == 'O';
+				values[1] = 'O';
 				return 1;
 			} else {
-				values[2] == 'O';
+				values[2] = 'O';
 				return 1;
 			}
 		}
 		if (values[7] == 'X') {
 			if (num == 0) {
-				values[3] == 'O';
+				values[3] = 'O';
 				return 1;
 			} else {
-				values[6] == 'O';
+				values[6] = 'O';
 				return 1;
 			}
 		}
@@ -171,19 +309,19 @@ int turn1(char values[]) {
 	if (values[2] == 'X') { //then check the to other cases
 		if (values[3] == 'X') {
 			if (num == 0) {
-				values[0] == 'O';
+				values[0] = 'O';
 				return 1;
 			} else {
-				values[1] == 'O';
+				values[1] = 'O';
 				return 1;
 			}
 		}
 		if (values[7] == 'X') {
 			if (num == 0) {
-				values[5] == 'O';
+				values[5] = 'O';
 				return 1;
 			} else {
-				values[8] == 'O';
+				values[8] = 'O';
 				return 1;
 			}
 		}
@@ -192,19 +330,19 @@ int turn1(char values[]) {
 	if (values[6] == 'X') { //then check the to other cases
 		if (values[1] == 'X') {
 			if (num == 0) {
-				values[0] == 'O';
+				values[0] = 'O';
 				return 1;
 			} else {
-				values[3] == 'O';
+				values[3] = 'O';
 				return 1;
 			}
 		}
 		if (values[5] == 'X') {
 			if (num == 0) {
-				values[7] == 'O';
+				values[7] = 'O';
 				return 1;
 			} else {
-				values[8] == 'O';
+				values[8] = 'O';
 				return 1;
 			}
 		}
@@ -213,19 +351,19 @@ int turn1(char values[]) {
 	if (values[8] == 'X') { //then check the to other cases
 		if (values[1] == 'X') {
 			if (num == 0) {
-				values[2] == 'O';
+				values[2] = 'O';
 				return 1;
 			} else {
-				values[5] == 'O';
+				values[5] = 'O';
 				return 1;
 			}
 		}
 		if (values[3] == 'X') {
 			if (num == 0) {
-				values[6] == 'O';
+				values[6] = 'O';
 				return 1;
 			} else {
-				values[7] == 'O';
+				values[7] = 'O';
 				return 1;
 			}
 		}
@@ -306,11 +444,13 @@ int winnerHelper(char values[]) {
 	}
 	//vertical 1
 	cPos = values[1];
-	if (values[4] == cPos && values[7] == cPos) {
+	if (cPos != ' ') {
+		if (values[4] == cPos && values[7] == cPos) {
 			return 1;
+		}
 	}
 
-	//vertical and horizontal of 2
+	//vertical and diagonal of 2
 	cPos = values[2];
 	if (cPos != ' ') {
 		if (values[5] == cPos && values[8] == cPos) {
@@ -322,15 +462,18 @@ int winnerHelper(char values[]) {
 	}
 
 	cPos = values[3];
-	if (values[4] == cPos && values[5] == cPos) {
-		return 1;
+	if (cPos != ' ') {
+		if (values[4] == cPos && values[5] == cPos) {
+			return 1;
+		}
 	}
 
 	cPos = values[6];
-	if (values[7] == cPos && values[8] == cPos) {
-		return 1;
+	if (cPos != ' ') {
+		if (values[7] == cPos && values[8] == cPos) {
+			return 1;
+		}
 	}
-
 	//no winner return 0
 	return 0;
 
